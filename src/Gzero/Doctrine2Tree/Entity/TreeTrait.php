@@ -65,13 +65,22 @@ trait TreeTrait {
         return $this->path;
     }
 
+    /**
+     * @return $this
+     */
     public function setAsRoot()
     {
         $this->parent = NULL;
         $this->level  = 0;
         $this->path   = $this->getId() . '/';
+        return $this;
     }
 
+    /**
+     * @param TreeNode $node
+     *
+     * @return $this
+     */
     public function setChildOf(TreeNode $node)
     {
         $this->isSameClass($node);
@@ -79,6 +88,27 @@ trait TreeTrait {
         $node->getChildren()->add($this); // Important add to collection
         $this->level = $node->getLevel() + 1;
         $this->path  = $node->getPath() . $this->getId() . '/';
+        return $this;
+    }
+
+    /**
+     * @param TreeNode $node
+     *
+     * @return $this
+     */
+    public function setSiblingOf(TreeNode $node)
+    {
+        $this->isSameClass($node);
+        $parent = $node->getParent();
+        if ($parent) {
+            $this->parent = $parent;
+            $parent->getChildren()->add($this); // Important add to collection
+            $this->level = $node->getLevel();
+            $this->path  = $parent->getPath() . $this->getId() . '/';
+        } else {
+            $this->setAsRoot();
+        }
+        return $this;
     }
 
     /**

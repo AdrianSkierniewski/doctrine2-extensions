@@ -71,6 +71,7 @@ class TreeSubscriber implements EventSubscriber {
                     'fieldName'    => 'children',
                     'targetEntity' => $classMetadata->name,
                     'mappedBy'     => 'parent',
+                    'cascade'      => ['persist'],
                 ]
             );
         }

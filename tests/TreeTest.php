@@ -76,4 +76,66 @@ class TreeTest extends Doctrine2TestCase {
         $node2 = new Tree2();
         $node1->setChildOf($node2);
     }
+
+    /**
+     * @test
+     *
+     */
+    public function can_add_sibling()
+    {
+        extract($this->_createSampleTree());
+        /** @noinspection PhpUndefinedVariableInspection */
+        $this->em->persist($root);
+        $this->em->flush();
+        $sibling1 = new Tree();
+        $sibling2 = new Tree();
+        $sibling1->setSiblingOf($root);
+        /** @noinspection PhpUndefinedVariableInspection */
+        $sibling2->setSiblingOf($child1_1_1);
+        $this->em->persist($sibling1);
+        $this->em->flush();
+        $this->assertNull($sibling1->getParent()); // Sibling for root is root node
+        $this->assertEquals($sibling1->getLevel(), 0); // Root level is 0
+        $this->assertEquals($child1_1_1->getLevel(), $sibling2->getLevel());
+        $this->assertSame($child1_1_1->getParent(), $sibling2->getParent(), 'Sibling should have same parent');
+    }
+
+    /**
+     * Helper function
+     *
+     * @return array
+     */
+    protected function _createSampleTree()
+    {
+        $tree               = array();
+        $tree['root']       = (new Tree())->setAsRoot();
+        $tree['child1']     = (new Tree())->setChildOf($tree['root']);
+        $tree['child2']     = (new Tree())->setChildOf($tree['root']);
+        $tree['child3']     = (new Tree())->setChildOf($tree['root']);
+        $tree['child1_1']   = (new Tree())->setChildOf($tree['child1']);
+        $tree['child1_1_1'] = (new Tree())->setChildOf($tree['child1_1']);
+        return $tree;
+    }
+
+    /**
+     * Helper function
+     *
+     * @return array
+     */
+    protected function _createAdvancedTree()
+    {
+        $tree                 = array();
+        $tree['root']         = (new Tree())->setAsRoot();
+        $tree['child1']       = (new Tree())->setChildOf($tree['root']);
+        $tree['child2']       = (new Tree())->setChildOf($tree['root']);
+        $tree['child3']       = (new Tree())->setChildOf($tree['root']);
+        $tree['child1_1']     = (new Tree())->setChildOf($tree['child1']);
+        $tree['child2_1']     = (new Tree())->setChildOf($tree['child2']);
+        $tree['child2_2']     = (new Tree())->setChildOf($tree['child2']);
+        $tree['child1_1_1']   = (new Tree())->setChildOf($tree['child1_1']);
+        $tree['child2_2_1']   = (new Tree())->setChildOf($tree['child2_2']);
+        $tree['child2_2_2']   = (new Tree())->setChildOf($tree['child2_2']);
+        $tree['child2_2_2_1'] = (new Tree())->setChildOf($tree['child2_2_2']);
+        return $tree;
+    }
 }
