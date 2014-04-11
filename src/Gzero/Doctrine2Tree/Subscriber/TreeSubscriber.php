@@ -37,9 +37,14 @@ class TreeSubscriber implements EventSubscriber {
     {
         /** @var TreeNode $entity */
         $entity = $eventArgs->getEntity();
-        if (!$entity->getPath()) {
-            $em = $eventArgs->getEntityManager();
-            $entity->setAsRoot();
+        if (!preg_match('/\d\/$/', $entity->getPath())) { // if path no ends with number and /
+            $em     = $eventArgs->getEntityManager();
+            $parent = $entity->getParent();
+            if ($parent) {
+                $entity->setPath($parent->getPath() . $entity->getId() . '/');
+            } else { // Only root has no parent
+                $entity->setAsRoot();
+            }
             $em->persist($entity);
             $em->flush();
         }
@@ -49,16 +54,23 @@ class TreeSubscriber implements EventSubscriber {
     {
         $classMetadata = $eventArgs->getClassMetadata();
         if ($this->hasTreeTrait($classMetadata)) {
-            $classMetadata->mapOneToOne(
+            $classMetadata->mapManyToOne(
                 [
-                    'targetEntity' => $classMetadata->name,
                     'fieldName'    => 'parent',
+                    'targetEntity' => $classMetadata->name,
                     'cascade'      => ['persist'],
                     'joinColumns'  => [
                         [
                             'onDelete' => 'CASCADE',
                         ]
                     ]
+                ]
+            );
+            $classMetadata->mapOneToMany(
+                [
+                    'fieldName'    => 'children',
+                    'targetEntity' => $classMetadata->name,
+                    'mappedBy'     => 'parent',
                 ]
             );
         }

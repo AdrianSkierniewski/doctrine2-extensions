@@ -14,7 +14,7 @@ use Gzero\Doctrine2Tree\Entity\TreeTrait;
  * @copyright  Copyright (c) 2014, Adrian Skierniewski
  * @Entity
  */
-class Tree implements TreeNode {
+class Tree2 implements TreeNode {
 
     use TreeTrait;
 

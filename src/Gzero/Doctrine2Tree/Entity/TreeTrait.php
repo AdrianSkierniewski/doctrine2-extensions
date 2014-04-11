@@ -1,5 +1,7 @@
 <?php namespace Gzero\Doctrine2Tree\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+
 /**
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -25,18 +27,27 @@ trait TreeTrait {
     protected $level = 0;
 
     /**
+     * TreeSubscriber
+     */
+    protected $parent;
+
+    /**
+     * TreeSubscriber
+     */
+    protected $children;
+
+    public function __construct()
+    {
+        $this->children = new ArrayCollection();
+    }
+
+    /**
      * @return int
      */
     public function getLevel()
     {
         return $this->level;
     }
-
-    /**
-     * TreeSubscriber
-     */
-
-    protected $parent;
 
     /**
      * @param string $path
@@ -58,17 +69,24 @@ trait TreeTrait {
     {
         $this->parent = NULL;
         $this->level  = 0;
-        if ($this->getId()) {
-            $this->path = $this->getId() . '/';
-        }
+        $this->path   = $this->getId() . '/';
     }
 
-    public function setAsChildren(TreeNode $node)
+    public function setChildOf(TreeNode $node)
     {
-        $this->parent = $node->getParent();
-        $this->level  = $node->getLevel();
-        $this->path   = $node->getPath() . $this->getId() . '/';
+        $this->isSameClass($node);
+        $this->parent = $node;
+        $node->getChildren()->add($this); // Important add to collection
+        $this->level = $node->getLevel() + 1;
+        $this->path  = $node->getPath() . $this->getId() . '/';
+    }
 
+    /**
+     * @return ArrayCollection
+     */
+    public function getChildren()
+    {
+        return $this->children;
     }
 
     /**
@@ -77,6 +95,18 @@ trait TreeTrait {
     public function getParent()
     {
         return $this->parent;
+    }
+
+    /**
+     * @param TreeNode $node
+     *
+     * @throws TreeException
+     */
+    protected function isSameClass(TreeNode $node)
+    {
+        if (get_class($this) != get_class($node)) {
+            throw new TreeException('Nodes must be same entity: ' . get_class($this) . ' not equals ' . get_class($node));
+        }
     }
 
 }

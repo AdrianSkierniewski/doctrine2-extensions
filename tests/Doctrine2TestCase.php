@@ -31,11 +31,11 @@ class Doctrine2TestCase extends \PHPUnit_Framework_TestCase {
     {
         $paths     = [__DIR__ . "/fixtures/Doctrine2Tree/"];
         $isDevMode = TRUE;
-
-        $evm    = new \Doctrine\Common\EventManager();
-        $config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode);
+        $evm       = new \Doctrine\Common\EventManager();
+        $config    = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode);
         $evm->addEventSubscriber(new \Gzero\Doctrine2Tree\Subscriber\TreeSubscriber());
         $this->em = EntityManager::create($this->dbParams, $config, $evm);
+
         $this->generateSchema(); // Build the schema for sqlite
 
         parent::setUp();
@@ -49,7 +49,9 @@ class Doctrine2TestCase extends \PHPUnit_Framework_TestCase {
         if (!empty($metadata)) {
             // Create SchemaTool
             $tool = new SchemaTool($this->em);
-            $tool->updateSchema($metadata);
+            $tool->dropSchema($metadata);
+            $tool->createSchema($metadata);
+//            $tool->updateSchema($metadata);
         } else {
             throw new \Doctrine\DBAL\Schema\SchemaException('No Metadata Classes to process.');
         }
