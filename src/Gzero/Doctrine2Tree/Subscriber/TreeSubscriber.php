@@ -2,6 +2,7 @@
 
 use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Persistence\Event\LoadClassMetadataEventArgs;
+use Doctrine\Common\Util\Debug;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Events;
 use Gzero\Doctrine2Tree\Entity\TreeNode;
@@ -29,6 +30,7 @@ class TreeSubscriber implements EventSubscriber {
     {
         return [
             Events::postPersist,
+            Events::preUpdate,
             Events::loadClassMetadata
         ];
     }
@@ -48,6 +50,12 @@ class TreeSubscriber implements EventSubscriber {
             $em->persist($entity);
             $em->flush();
         }
+    }
+
+    public function preUpdate(LifecycleEventArgs $eventArgs)
+    {
+        $entity = $eventArgs->getEntity();
+//        Debug::dump($entity);
     }
 
     public function loadClassMetadata(LoadClassMetadataEventArgs $eventArgs)

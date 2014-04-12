@@ -27,12 +27,19 @@ class Doctrine2TestCase extends \PHPUnit_Framework_TestCase {
      */
     protected $em;
 
+    /**
+     * @var \Doctrine\DBAL\Logging\DebugStack
+     */
+    protected $logger;
+
     public function setUp()
     {
         $paths     = [__DIR__ . "/fixtures/Doctrine2Tree/"];
         $isDevMode = TRUE;
         $evm       = new \Doctrine\Common\EventManager();
+        $this->logger    = new \Doctrine\DBAL\Logging\DebugStack();
         $config    = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode);
+        $config->setSQLLogger($this->logger);
         $evm->addEventSubscriber(new \Gzero\Doctrine2Tree\Subscriber\TreeSubscriber());
         $this->em = EntityManager::create($this->dbParams, $config, $evm);
 

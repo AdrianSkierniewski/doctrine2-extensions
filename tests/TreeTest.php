@@ -1,4 +1,5 @@
 <?php
+use Doctrine\Common\Util\Debug;
 use fixtures\Doctrine2Test\Tree;
 use fixtures\Doctrine2Test\Tree2;
 
@@ -17,6 +18,12 @@ class TreeTest extends Doctrine2TestCase {
 
     public function setUp()
     {
+        $this->dbParams = array(
+            'driver'   => 'pdo_mysql',
+            'user'     => 'doctrine2-tree',
+            'password' => 'test',
+            'dbname'   => 'doctrine2-tree',
+        );
         parent::setUp();
     }
 
@@ -99,6 +106,26 @@ class TreeTest extends Doctrine2TestCase {
         $this->assertEquals($child1_1_1->getLevel(), $sibling2->getLevel());
         $this->assertSame($child1_1_1->getParent(), $sibling2->getParent(), 'Sibling should have same parent');
     }
+
+//    /**
+//     * @test
+//     */
+//    public function can_move_subtree()
+//    {
+//        extract($this->_createSampleTree());
+//        /** @noinspection PhpUndefinedVariableInspection */
+//        $this->em->persist($root);
+//        $this->em->flush();
+//        print_r($this->logger->queries);
+//        exit;
+//
+//        /** @noinspection PhpUndefinedVariableInspection */
+//        $this->em->refresh($child2);
+//        /** @noinspection PhpUndefinedVariableInspection */
+//        $child2->setSiblingOf($child1);
+//        $this->em->persist($child2);
+//        $this->em->flush();
+//    }
 
     /**
      * Helper function
