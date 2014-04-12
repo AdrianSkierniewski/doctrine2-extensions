@@ -18,12 +18,6 @@ class TreeTest extends Doctrine2TestCase {
 
     public function setUp()
     {
-        $this->dbParams = array(
-            'driver'   => 'pdo_mysql',
-            'user'     => 'doctrine2-tree',
-            'password' => 'test',
-            'dbname'   => 'doctrine2-tree',
-        );
         parent::setUp();
     }
 
