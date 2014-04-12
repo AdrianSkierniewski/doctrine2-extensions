@@ -15,10 +15,10 @@ use Doctrine\Common\Collections\ArrayCollection;
 trait TreeTrait {
 
     /**
-     * @Column(type="string", nullable=TRUE)
+     * @Column(type="string")
      * @var string
      */
-    protected $path;
+    protected $path = '/';
 
     /**
      * @Column(type="integer")
@@ -72,7 +72,7 @@ trait TreeTrait {
     {
         $this->parent = NULL;
         $this->level  = 0;
-        $this->path   = $this->getId() . '/';
+        $this->path   = '/';
         return $this;
     }
 
@@ -87,7 +87,7 @@ trait TreeTrait {
         $this->parent = $node;
         $node->getChildren()->add($this); // Important add to collection
         $this->level = $node->getLevel() + 1;
-        $this->path  = $node->getPath() . $this->getId() . '/';
+        $this->path  = $node->getPath() . $node->getId() . '/';
         return $this;
     }
 
@@ -125,6 +125,14 @@ trait TreeTrait {
     public function getParent()
     {
         return $this->parent;
+    }
+
+    public function calculatePath()
+    {
+        if ($this->getParent()) {
+            return $this->getParent()->getPath() . $this->getParent()->getId() . '/';
+        }
+        return '/';
     }
 
     /**

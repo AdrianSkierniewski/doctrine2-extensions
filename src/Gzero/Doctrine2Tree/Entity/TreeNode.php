@@ -24,4 +24,6 @@ interface TreeNode {
 
     public function getChildren();
 
+    public function calculatePath();
+
 } 

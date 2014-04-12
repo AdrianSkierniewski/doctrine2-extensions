@@ -2,10 +2,8 @@
 
 use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Persistence\Event\LoadClassMetadataEventArgs;
-use Doctrine\Common\Util\Debug;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Events;
-use Gzero\Doctrine2Tree\Entity\TreeNode;
 
 /**
  * This file is part of the GZERO CMS package.
@@ -37,18 +35,16 @@ class TreeSubscriber implements EventSubscriber {
 
     public function postPersist(LifecycleEventArgs $eventArgs)
     {
-        /** @var TreeNode $entity */
+//        /** @var TreeNode $entity */
         $entity = $eventArgs->getEntity();
-        if (!preg_match('/\d\/$/', $entity->getPath())) { // if path no ends with number and /
-            $em     = $eventArgs->getEntityManager();
-            $parent = $entity->getParent();
-            if ($parent) {
-                $entity->setPath($parent->getPath() . $entity->getId() . '/');
-            } else { // Only root has no parent
-                $entity->setAsRoot();
+        $parent = $entity->getParent();
+        if ($parent) { // We are not persisting root
+            $em = $eventArgs->getEntityManager();
+            if ($entity->getPath() != $entity->calculatePath()) { // We`re persisting for not persisted entity
+                $entity->setPath($entity->calculatePath());
+                $em->persist($entity);
+                $em->flush();
             }
-            $em->persist($entity);
-            $em->flush();
         }
     }
 

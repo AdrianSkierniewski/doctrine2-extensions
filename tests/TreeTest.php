@@ -1,5 +1,4 @@
 <?php
-use Doctrine\Common\Util\Debug;
 use fixtures\Doctrine2Test\Tree;
 use fixtures\Doctrine2Test\Tree2;
 
@@ -37,10 +36,10 @@ class TreeTest extends Doctrine2TestCase {
         $node = new Tree();
         $this->em->persist($node);
         $this->em->flush();
-        $dbNode = $this->em->find('fixtures\Doctrine2Test\Tree', 1);
-        $this->assertEquals($dbNode->getPath(), $node->getId() . '/'); // Path equals id/
-        $this->assertNull($dbNode->getParent()); // No parent
-        $this->assertEquals($dbNode->getLevel(), 0); // Root level equals 0
+        $this->em->refresh($node);
+        $this->assertEquals($node->getPath(), '/'); // Path equals id/
+        $this->assertNull($node->getParent()); // No parent
+        $this->assertEquals($node->getLevel(), 0); // Root level equals 0
     }
 
     /**
@@ -58,13 +57,10 @@ class TreeTest extends Doctrine2TestCase {
         $child3->setChildOf($child2);
         $this->assertEquals(1, $child2->getChildren()->count(), 'Child2 should have 1 child before persist');
         $this->em->persist($root);
-        $this->em->persist($child);
-        $this->em->persist($child2);
-        $this->em->persist($child3);
-        $this->em->flush();
-        $this->assertEquals($child2->getLevel(), $child->getLevel(), 'Sibling should have same level'); // Sibling
-        $this->assertEquals($child3->getPath(), $child2->getPath() . $child3->getId() . '/');
-        $this->assertSame($child3->getParent(), $child2);
+        $this->em->flush(); // Event fired - postPersist
+        $this->assertCount(2, $root->getChildren()); // Root have 2 children
+        $this->assertEquals('/1/', $root->getChildren()->first()->getPath()); // Check path
+        $this->assertEquals(1, $root->getChildren()->first()->getLevel()); // Check level
     }
 
     /**
@@ -84,20 +80,20 @@ class TreeTest extends Doctrine2TestCase {
      */
     public function can_add_sibling()
     {
-        extract($this->_createSampleTree());
-        /** @noinspection PhpUndefinedVariableInspection */
-        $this->em->persist($root);
-        $this->em->flush();
+        extract($this->_createSimpleTree());
         $sibling1 = new Tree();
         $sibling2 = new Tree();
-        $sibling1->setSiblingOf($root);
+        /** @noinspection PhpUndefinedVariableInspection */
+        $sibling1->setSiblingOf($root); // Another root
         /** @noinspection PhpUndefinedVariableInspection */
         $sibling2->setSiblingOf($child1_1_1);
+        $this->em->persist($root);
         $this->em->persist($sibling1);
         $this->em->flush();
         $this->assertNull($sibling1->getParent()); // Sibling for root is root node
         $this->assertEquals($sibling1->getLevel(), 0); // Root level is 0
-        $this->assertEquals($child1_1_1->getLevel(), $sibling2->getLevel());
+        $this->assertEquals(3, $sibling2->getLevel()); // Same level as sibling
+        $this->assertEquals('/1/2/3/', $sibling2->getPath()); // Same path as sibling
         $this->assertSame($child1_1_1->getParent(), $sibling2->getParent(), 'Sibling should have same parent');
     }
 
@@ -126,15 +122,15 @@ class TreeTest extends Doctrine2TestCase {
      *
      * @return array
      */
-    protected function _createSampleTree()
+    protected function _createSimpleTree()
     {
         $tree               = array();
-        $tree['root']       = (new Tree())->setAsRoot();
-        $tree['child1']     = (new Tree())->setChildOf($tree['root']);
-        $tree['child2']     = (new Tree())->setChildOf($tree['root']);
-        $tree['child3']     = (new Tree())->setChildOf($tree['root']);
-        $tree['child1_1']   = (new Tree())->setChildOf($tree['child1']);
-        $tree['child1_1_1'] = (new Tree())->setChildOf($tree['child1_1']);
+        $tree['root']       = (new Tree())->setAsRoot(); // id 1 path / level 0
+        $tree['child1']     = (new Tree())->setChildOf($tree['root']); // id 2 path /1/ level 1
+        $tree['child1_1']   = (new Tree())->setChildOf($tree['child1']); // id 3 path /1/2/ level 2
+        $tree['child1_1_1'] = (new Tree())->setChildOf($tree['child1_1']); // id 4 /1/2/3/ level 3
+        $tree['child2']     = (new Tree())->setChildOf($tree['root']); // id 5 path /1/ level 1
+        $tree['child3']     = (new Tree())->setChildOf($tree['root']); // id 6 path /1/ level 1
         return $tree;
     }
 
@@ -151,9 +147,9 @@ class TreeTest extends Doctrine2TestCase {
         $tree['child2']       = (new Tree())->setChildOf($tree['root']);
         $tree['child3']       = (new Tree())->setChildOf($tree['root']);
         $tree['child1_1']     = (new Tree())->setChildOf($tree['child1']);
+        $tree['child1_1_1']   = (new Tree())->setChildOf($tree['child1_1']);
         $tree['child2_1']     = (new Tree())->setChildOf($tree['child2']);
         $tree['child2_2']     = (new Tree())->setChildOf($tree['child2']);
-        $tree['child1_1_1']   = (new Tree())->setChildOf($tree['child1_1']);
         $tree['child2_2_1']   = (new Tree())->setChildOf($tree['child2_2']);
         $tree['child2_2_2']   = (new Tree())->setChildOf($tree['child2_2']);
         $tree['child2_2_2_1'] = (new Tree())->setChildOf($tree['child2_2_2']);
