@@ -1,4 +1,5 @@
 <?php
+use Doctrine\Common\Util\Debug;
 use fixtures\Doctrine2Test\Tree;
 use fixtures\Doctrine2Test\Tree2;
 
@@ -63,16 +64,16 @@ class TreeTest extends Doctrine2TestCase {
         $this->assertEquals(1, $root->getChildren()->first()->getLevel()); // Check level
     }
 
-    /**
-     * @test
-     * @expectedException \Gzero\Doctrine2Tree\Entity\TreeException
-     */
-    public function can_only_add_same_entity()
-    {
-        $node1 = new Tree();
-        $node2 = new Tree2();
-        $node1->setChildOf($node2);
-    }
+//    /**
+//     * @test
+//     * @expectedException \Gzero\Doctrine2Tree\Entity\TreeException
+//     */
+//    public function can_only_add_same_entity()
+//    {
+//        $node1 = new Tree();
+//        $node2 = new Tree2();
+//        $node1->setChildOf($node2);
+//    }
 
     /**
      * @test
@@ -97,25 +98,22 @@ class TreeTest extends Doctrine2TestCase {
         $this->assertSame($child1_1_1->getParent(), $sibling2->getParent(), 'Sibling should have same parent');
     }
 
-//    /**
-//     * @test
-//     */
-//    public function can_move_subtree()
-//    {
-//        extract($this->_createSampleTree());
-//        /** @noinspection PhpUndefinedVariableInspection */
-//        $this->em->persist($root);
-//        $this->em->flush();
-//        print_r($this->logger->queries);
-//        exit;
-//
-//        /** @noinspection PhpUndefinedVariableInspection */
-//        $this->em->refresh($child2);
-//        /** @noinspection PhpUndefinedVariableInspection */
-//        $child2->setSiblingOf($child1);
-//        $this->em->persist($child2);
-//        $this->em->flush();
-//    }
+    /**
+     * @test
+     */
+    public function can_move_subtree()
+    {
+        extract($this->_createSimpleTree());
+        /** @noinspection PhpUndefinedVariableInspection */
+        $this->em->persist($root);
+        $this->em->flush();
+        /** @noinspection PhpUndefinedVariableInspection */
+        $child1->setChildOf($child2);
+        $this->em->persist($root);
+        $this->em->flush();
+        $this->em->persist($root);
+        $this->em->flush();
+    }
 
     /**
      * Helper function

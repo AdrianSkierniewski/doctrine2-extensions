@@ -42,6 +42,14 @@ trait TreeTrait {
     }
 
     /**
+     * @param int $level
+     */
+    public function setLevel($level)
+    {
+        $this->level = $level;
+    }
+
+    /**
      * @return int
      */
     public function getLevel()
@@ -133,6 +141,14 @@ trait TreeTrait {
             return $this->getParent()->getPath() . $this->getParent()->getId() . '/';
         }
         return '/';
+    }
+
+    public function calculateLevel()
+    {
+        if ($this->getParent()) {
+            return $this->getParent()->getLevel() + 1;
+        }
+        return 0;
     }
 
     /**

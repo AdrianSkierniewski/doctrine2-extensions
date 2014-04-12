@@ -26,4 +26,6 @@ interface TreeNode {
 
     public function calculatePath();
 
+    public function calculateLevel();
+
 } 

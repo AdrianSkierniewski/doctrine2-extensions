@@ -2,8 +2,10 @@
 
 use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Persistence\Event\LoadClassMetadataEventArgs;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Events;
+use Gzero\Doctrine2Tree\Entity\TreeNode;
 
 /**
  * This file is part of the GZERO CMS package.
@@ -35,15 +37,17 @@ class TreeSubscriber implements EventSubscriber {
 
     public function postPersist(LifecycleEventArgs $eventArgs)
     {
-//        /** @var TreeNode $entity */
         $entity = $eventArgs->getEntity();
-        $parent = $entity->getParent();
-        if ($parent) { // We are not persisting root
-            $em = $eventArgs->getEntityManager();
-            if ($entity->getPath() != $entity->calculatePath()) { // We`re persisting for not persisted entity
-                $entity->setPath($entity->calculatePath());
-                $em->persist($entity);
-                $em->flush();
+        if ($entity instanceof TreeNode) {
+//        /** @var TreeNode $entity */
+            $parent = $entity->getParent();
+            if ($parent) { // We are not persisting root
+                $em = $eventArgs->getEntityManager();
+                if ($entity->getPath() != $entity->calculatePath()) { // We`re persisting for not persisted entity
+                    $entity->setPath($entity->calculatePath());
+                    $em->persist($entity);
+                    $em->flush();
+                }
             }
         }
     }
@@ -51,7 +55,11 @@ class TreeSubscriber implements EventSubscriber {
     public function preUpdate(LifecycleEventArgs $eventArgs)
     {
         $entity = $eventArgs->getEntity();
-//        Debug::dump($entity);
+        if ($entity instanceof TreeNode) {
+            if ($eventArgs->hasChangedField('parent')) {
+                $this->updateChildren($entity, $eventArgs, $eventArgs->getEntityManager());
+            }
+        }
     }
 
     public function loadClassMetadata(LoadClassMetadataEventArgs $eventArgs)
@@ -78,6 +86,25 @@ class TreeSubscriber implements EventSubscriber {
                     'cascade'      => ['persist'],
                 ]
             );
+        }
+    }
+
+    private function updateChildren(TreeNode $entity, LifecycleEventArgs $eventArgs, EntityManager $em)
+    {
+        $descendantsPath    = $eventArgs->getOldValue('path') . $entity->getId() . '/';
+        $newDescendantsPath = $eventArgs->getNewValue('path') . $entity->getId() . '/';
+        $query              = $em->createQuery(
+            "SELECT n.id, n.path FROM " . get_class($entity) . " n
+                    WHERE n.path LIKE '" . $descendantsPath . "%' ORDER BY n.level ASC"
+        );
+        $descendants        = $query->getResult(); // List all descendants our entity
+        foreach ($descendants as &$descendant) {
+            $path  = preg_replace("|^$descendantsPath|", $newDescendantsPath, $descendant['path']);
+            $query = $em->createQuery(
+                "UPDATE " . get_class($entity) . " n SET n.path = '" . $path . "'
+                WHERE n.id = " . $descendant['id']
+            );
+            $query->getResult(); // updating descendant path
         }
     }
 
