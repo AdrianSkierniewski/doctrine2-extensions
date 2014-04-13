@@ -14,9 +14,9 @@ interface TreeNode {
 
     public function getId();
 
-    public function getPath();
+    public function setPath($path);
 
-    public function setAsRoot();
+    public function getPath();
 
     public function getLevel();
 
@@ -24,8 +24,12 @@ interface TreeNode {
 
     public function getChildren();
 
-    public function calculatePath();
+    public function setAsRoot();
 
-    public function calculateLevel();
+    public function setChildOf(TreeNode $node);
+
+    public function setSiblingOf(TreeNode $node);
+
+    public function calculatePath();
 
 } 

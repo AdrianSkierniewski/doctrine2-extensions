@@ -42,38 +42,6 @@ trait TreeTrait {
     }
 
     /**
-     * @param int $level
-     */
-    public function setLevel($level)
-    {
-        $this->level = $level;
-    }
-
-    /**
-     * @return int
-     */
-    public function getLevel()
-    {
-        return $this->level;
-    }
-
-    /**
-     * @param string $path
-     */
-    public function setPath($path)
-    {
-        $this->path = $path;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPath()
-    {
-        return $this->path;
-    }
-
-    /**
      * @return $this
      */
     public function setAsRoot()
@@ -119,6 +87,43 @@ trait TreeTrait {
         return $this;
     }
 
+    public function calculatePath()
+    {
+        if ($this->getParent()) {
+            return $this->getParent()->getPath() . $this->getParent()->getId() . '/';
+        }
+        return '/';
+    }
+
+    //------------------------------------------------------------------------------------------------
+    // START: Getters & Setters
+    //------------------------------------------------------------------------------------------------
+
+
+    /**
+     * @param string $path
+     */
+    public function setPath($path)
+    {
+        $this->path = $path;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPath()
+    {
+        return $this->path;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLevel()
+    {
+        return $this->level;
+    }
+
     /**
      * @return ArrayCollection
      */
@@ -135,21 +140,9 @@ trait TreeTrait {
         return $this->parent;
     }
 
-    public function calculatePath()
-    {
-        if ($this->getParent()) {
-            return $this->getParent()->getPath() . $this->getParent()->getId() . '/';
-        }
-        return '/';
-    }
-
-    public function calculateLevel()
-    {
-        if ($this->getParent()) {
-            return $this->getParent()->getLevel() + 1;
-        }
-        return 0;
-    }
+    //-----------------------------------------------------------------------------------------------
+    // END:  Getters & Setters
+    //-----------------------------------------------------------------------------------------------
 
     /**
      * @param TreeNode $node
@@ -158,7 +151,7 @@ trait TreeTrait {
      */
     protected function isSameClass(TreeNode $node)
     {
-        if (get_class($this) != get_class($node)) {
+        if (get_class($this) != get_class($node) and !preg_match('/^DoctrineProxies/', get_class($node))) {
             throw new TreeException('Nodes must be same entity: ' . get_class($this) . ' not equals ' . get_class($node));
         }
     }

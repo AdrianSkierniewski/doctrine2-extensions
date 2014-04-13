@@ -5,6 +5,7 @@ use Doctrine\Common\Persistence\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Events;
+use Gzero\Doctrine2Tree\Entity\TreeException;
 use Gzero\Doctrine2Tree\Entity\TreeNode;
 
 /**
@@ -35,11 +36,13 @@ class TreeSubscriber implements EventSubscriber {
         ];
     }
 
+    /**
+     * @param LifecycleEventArgs $eventArgs
+     */
     public function postPersist(LifecycleEventArgs $eventArgs)
     {
         $entity = $eventArgs->getEntity();
         if ($entity instanceof TreeNode) {
-//        /** @var TreeNode $entity */
             $parent = $entity->getParent();
             if ($parent) { // We are not persisting root
                 $em = $eventArgs->getEntityManager();
@@ -52,16 +55,23 @@ class TreeSubscriber implements EventSubscriber {
         }
     }
 
+    /**
+     * @param LifecycleEventArgs $eventArgs
+     */
     public function preUpdate(LifecycleEventArgs $eventArgs)
     {
         $entity = $eventArgs->getEntity();
         if ($entity instanceof TreeNode) {
             if ($eventArgs->hasChangedField('parent')) {
+                $this->validateParentMove($entity, $eventArgs);
                 $this->updateChildren($entity, $eventArgs, $eventArgs->getEntityManager());
             }
         }
     }
 
+    /**
+     * @param LoadClassMetadataEventArgs $eventArgs
+     */
     public function loadClassMetadata(LoadClassMetadataEventArgs $eventArgs)
     {
         $classMetadata = $eventArgs->getClassMetadata();
@@ -89,6 +99,13 @@ class TreeSubscriber implements EventSubscriber {
         }
     }
 
+    /**
+     * Updating children after parent move
+     *
+     * @param TreeNode           $entity
+     * @param LifecycleEventArgs $eventArgs
+     * @param EntityManager      $em
+     */
     private function updateChildren(TreeNode $entity, LifecycleEventArgs $eventArgs, EntityManager $em)
     {
         $descendantsPath    = $eventArgs->getOldValue('path') . $entity->getId() . '/';
@@ -98,7 +115,7 @@ class TreeSubscriber implements EventSubscriber {
                     WHERE n.path LIKE '" . $descendantsPath . "%' ORDER BY n.level ASC"
         );
         $descendants        = $query->getResult(); // List all descendants our entity
-        foreach ($descendants as &$descendant) {
+        foreach ($descendants as $descendant) {
             $path  = preg_replace("|^$descendantsPath|", $newDescendantsPath, $descendant['path']);
             $query = $em->createQuery(
                 "UPDATE " . get_class($entity) . " n SET n.path = '" . $path . "'
@@ -108,8 +125,27 @@ class TreeSubscriber implements EventSubscriber {
         }
     }
 
+    /**
+     * @param $classMetadata
+     *
+     * @return bool
+     */
     private function hasTreeTrait($classMetadata)
     {
         return in_array('Gzero\Doctrine2Tree\Entity\TreeTrait', array_keys($classMetadata->reflClass->getTraits()), TRUE);
     }
+
+    /**
+     * @param TreeNode           $entity
+     * @param LifecycleEventArgs $eventArgs
+     *
+     * @throws \Gzero\Doctrine2Tree\Entity\TreeException
+     */
+    private function validateParentMove(TreeNode $entity, LifecycleEventArgs $eventArgs)
+    {
+        if (preg_match('|\/' . $entity->getId() . '\/|', $eventArgs->getNewValue('path'))) {
+            throw new TreeException('Illegal parent move');
+        }
+    }
+
 }

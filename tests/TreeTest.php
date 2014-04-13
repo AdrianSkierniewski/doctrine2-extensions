@@ -1,5 +1,4 @@
 <?php
-use Doctrine\Common\Util\Debug;
 use fixtures\Doctrine2Test\Tree;
 use fixtures\Doctrine2Test\Tree2;
 
@@ -64,16 +63,16 @@ class TreeTest extends Doctrine2TestCase {
         $this->assertEquals(1, $root->getChildren()->first()->getLevel()); // Check level
     }
 
-//    /**
-//     * @test
-//     * @expectedException \Gzero\Doctrine2Tree\Entity\TreeException
-//     */
-//    public function can_only_add_same_entity()
-//    {
-//        $node1 = new Tree();
-//        $node2 = new Tree2();
-//        $node1->setChildOf($node2);
-//    }
+    /**
+     * @test
+     * @expectedException \Gzero\Doctrine2Tree\Entity\TreeException
+     */
+    public function can_only_add_same_entity()
+    {
+        $node1 = new Tree();
+        $node2 = new Tree2();
+        $node1->setChildOf($node2);
+    }
 
     /**
      * @test
@@ -113,6 +112,23 @@ class TreeTest extends Doctrine2TestCase {
         $this->em->flush();
         $this->em->persist($root);
         $this->em->flush();
+    }
+
+    /**
+     * @test
+     * @expectedException \Gzero\Doctrine2Tree\Entity\TreeException
+     */
+    public function cant_move_parent_to_descendant()
+    {
+        extract($this->_createAdvancedTree());
+        /** @noinspection PhpUndefinedVariableInspection */
+        $this->em->persist($root);
+        $this->em->flush();
+        /** @noinspection PhpUndefinedVariableInspection */
+        $child2_2->setChildOf($child2_2_2);
+        $this->em->persist($child2_2);
+        $this->em->flush();
+
     }
 
     /**
