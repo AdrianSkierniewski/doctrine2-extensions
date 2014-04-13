@@ -12,7 +12,7 @@ use Gzero\Doctrine2Tree\Entity\TreeTrait;
  * @package    fixtures\Doctrine2Test
  * @author     Adrian Skierniewski <adrian.skierniewski@gmail.com>
  * @copyright  Copyright (c) 2014, Adrian Skierniewski
- * @Entity
+ * @Entity(repositoryClass="fixtures\Doctrine2Test\TreeRepository")
  */
 class Tree implements TreeNode {
 
@@ -32,4 +32,4 @@ class Tree implements TreeNode {
         return $this->id;
     }
 
-} 
+}

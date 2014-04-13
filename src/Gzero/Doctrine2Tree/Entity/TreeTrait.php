@@ -116,6 +116,11 @@ trait TreeTrait {
         return $this->path;
     }
 
+    public function getChildrenPath()
+    {
+        return $this->getPath() . $this->getId() . '/';
+    }
+
     /**
      * @return int
      */

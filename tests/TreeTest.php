@@ -132,6 +132,23 @@ class TreeTest extends Doctrine2TestCase {
     }
 
     /**
+     * @test
+     * @TODO check order by level
+     */
+    public function can_find_descendants()
+    {
+        extract($this->_createAdvancedTree());
+        /** @noinspection PhpUndefinedVariableInspection */
+        $this->em->persist($root);
+        $this->em->flush();
+        $repo = $this->em->getRepository('fixtures\Doctrine2Test\Tree');
+        /* @var \fixtures\Doctrine2Test\TreeRepository $repo */
+        $this->assertCount(10, $repo->findDescendants($root));
+        /** @noinspection PhpUndefinedVariableInspection */
+        $this->assertCount(2, $repo->findDescendants($child1));
+    }
+
+    /**
      * Helper function
      *
      * @return array
