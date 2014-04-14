@@ -134,6 +134,7 @@ class TreeTest extends Doctrine2TestCase {
     /**
      * @test
      * @TODO check order by level
+     * @TODO check descendants nodes
      */
     public function can_find_descendants()
     {
@@ -146,6 +147,24 @@ class TreeTest extends Doctrine2TestCase {
         $this->assertCount(10, $repo->findDescendants($root));
         /** @noinspection PhpUndefinedVariableInspection */
         $this->assertCount(2, $repo->findDescendants($child1));
+    }
+
+    /**
+     * @test
+     * @TODO check order by level
+     * @TODO check ancestors nodes
+     */
+    public function can_find_ancestors()
+    {
+        extract($this->_createAdvancedTree());
+        /** @noinspection PhpUndefinedVariableInspection */
+        $this->em->persist($root);
+        $this->em->flush();
+        /* @var \fixtures\Doctrine2Test\TreeRepository $repo */
+        $repo = $this->em->getRepository('fixtures\Doctrine2Test\Tree');
+        /** @noinspection PhpUndefinedVariableInspection */
+        $this->assertCount(3, $repo->findAncestors($child1_1_1));
+        $this->assertCount(0, $repo->findAncestors($root), "Root shouldn't have ancestors");
     }
 
     /**

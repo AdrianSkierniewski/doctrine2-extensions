@@ -35,4 +35,20 @@ trait TreeTrait {
         return $qb->getQuery()->getResult();
 
     }
+
+    public function findAncestors(TreeNode $node)
+    {
+        /* @var QueryBuilder $qb */
+        if ($node->getPath() != '/') { // root does not have ancestors
+            $ancestorsIds = explode('/', substr(substr($node->getPath(), 1), 0, -1));
+            $qb           = $this->_em->createQueryBuilder();
+            $qb->select('n')
+                ->from($this->getClassName(), 'n')
+                ->where('n.id IN(:ids)')
+                ->setParameter('ids', $ancestorsIds)
+                ->orderBy('n.level');
+            return $qb->getQuery()->getResult();
+        }
+        return [];
+    }
 } 
