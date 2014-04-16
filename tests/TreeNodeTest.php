@@ -3,8 +3,6 @@ use fixtures\Doctrine2Test\Tree;
 use fixtures\Doctrine2Test\Tree2;
 
 /**
- * This file is part of the GZERO CMS package.
- *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
@@ -13,7 +11,7 @@ use fixtures\Doctrine2Test\Tree2;
  * @author     Adrian Skierniewski <adrian.skierniewski@gmail.com>
  * @copyright  Copyright (c) 2014, Adrian Skierniewski
  */
-class TreeTest extends Doctrine2TestCase {
+class TreeNodeTest extends Doctrine2TestCase {
 
     public function setUp()
     {
@@ -80,7 +78,7 @@ class TreeTest extends Doctrine2TestCase {
      */
     public function can_add_sibling()
     {
-        extract($this->_createSimpleTree());
+        extract($this->createSimpleTree());
         $sibling1 = new Tree();
         $sibling2 = new Tree();
         /** @noinspection PhpUndefinedVariableInspection */
@@ -102,12 +100,10 @@ class TreeTest extends Doctrine2TestCase {
      */
     public function can_move_subtree()
     {
-        extract($this->_createSimpleTree());
-        /** @noinspection PhpUndefinedVariableInspection */
-        $this->em->persist($root);
-        $this->em->flush();
+        extract($this->createSimpleTree());
         /** @noinspection PhpUndefinedVariableInspection */
         $child1->setChildOf($child2);
+        /** @noinspection PhpUndefinedVariableInspection */
         $this->em->persist($root);
         $this->em->flush();
         $this->em->persist($root);
@@ -120,89 +116,11 @@ class TreeTest extends Doctrine2TestCase {
      */
     public function cant_move_parent_to_descendant()
     {
-        extract($this->_createAdvancedTree());
-        /** @noinspection PhpUndefinedVariableInspection */
-        $this->em->persist($root);
-        $this->em->flush();
+        extract($this->createAdvancedTree());
         /** @noinspection PhpUndefinedVariableInspection */
         $child2_2->setChildOf($child2_2_2);
         $this->em->persist($child2_2);
         $this->em->flush();
-
     }
 
-    /**
-     * @test
-     * @TODO check order by level
-     * @TODO check descendants nodes
-     */
-    public function can_find_descendants()
-    {
-        extract($this->_createAdvancedTree());
-        /** @noinspection PhpUndefinedVariableInspection */
-        $this->em->persist($root);
-        $this->em->flush();
-        $repo = $this->em->getRepository('fixtures\Doctrine2Test\Tree');
-        /* @var \fixtures\Doctrine2Test\TreeRepository $repo */
-        $this->assertCount(10, $repo->findDescendants($root));
-        /** @noinspection PhpUndefinedVariableInspection */
-        $this->assertCount(2, $repo->findDescendants($child1));
-    }
-
-    /**
-     * @test
-     * @TODO check order by level
-     * @TODO check ancestors nodes
-     */
-    public function can_find_ancestors()
-    {
-        extract($this->_createAdvancedTree());
-        /** @noinspection PhpUndefinedVariableInspection */
-        $this->em->persist($root);
-        $this->em->flush();
-        /* @var \fixtures\Doctrine2Test\TreeRepository $repo */
-        $repo = $this->em->getRepository('fixtures\Doctrine2Test\Tree');
-        /** @noinspection PhpUndefinedVariableInspection */
-        $this->assertCount(3, $repo->findAncestors($child1_1_1));
-        $this->assertCount(0, $repo->findAncestors($root), "Root shouldn't have ancestors");
-    }
-
-    /**
-     * Helper function
-     *
-     * @return array
-     */
-    protected function _createSimpleTree()
-    {
-        $tree               = array();
-        $tree['root']       = (new Tree())->setAsRoot(); // id 1 path / level 0
-        $tree['child1']     = (new Tree())->setChildOf($tree['root']); // id 2 path /1/ level 1
-        $tree['child1_1']   = (new Tree())->setChildOf($tree['child1']); // id 3 path /1/2/ level 2
-        $tree['child1_1_1'] = (new Tree())->setChildOf($tree['child1_1']); // id 4 /1/2/3/ level 3
-        $tree['child2']     = (new Tree())->setChildOf($tree['root']); // id 5 path /1/ level 1
-        $tree['child3']     = (new Tree())->setChildOf($tree['root']); // id 6 path /1/ level 1
-        return $tree;
-    }
-
-    /**
-     * Helper function
-     *
-     * @return array
-     */
-    protected function _createAdvancedTree()
-    {
-        $tree                 = array();
-        $tree['root']         = (new Tree())->setAsRoot();
-        $tree['child1']       = (new Tree())->setChildOf($tree['root']);
-        $tree['child2']       = (new Tree())->setChildOf($tree['root']);
-        $tree['child3']       = (new Tree())->setChildOf($tree['root']);
-        $tree['child1_1']     = (new Tree())->setChildOf($tree['child1']);
-        $tree['child1_1_1']   = (new Tree())->setChildOf($tree['child1_1']);
-        $tree['child2_1']     = (new Tree())->setChildOf($tree['child2']);
-        $tree['child2_2']     = (new Tree())->setChildOf($tree['child2']);
-        $tree['child2_2_1']   = (new Tree())->setChildOf($tree['child2_2']);
-        $tree['child2_2_2']   = (new Tree())->setChildOf($tree['child2_2']);
-        $tree['child2_2_2_1'] = (new Tree())->setChildOf($tree['child2_2_2']);
-        return $tree;
-    }
 }

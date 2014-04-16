@@ -4,8 +4,6 @@ use Doctrine\DBAL\Query\QueryBuilder;
 use Gzero\Doctrine2Tree\Entity\TreeNode;
 
 /**
- * This file is part of the GZERO CMS package.
- *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
@@ -36,6 +34,11 @@ trait TreeTrait {
 
     }
 
+    /**
+     * @param TreeNode $node
+     *
+     * @return array
+     */
     public function findAncestors(TreeNode $node)
     {
         /* @var QueryBuilder $qb */
@@ -51,4 +54,39 @@ trait TreeTrait {
         }
         return [];
     }
+
+    /**
+     * @param TreeNode $node
+     * @param array    $criteria
+     * @param array    $orderBy
+     * @param null     $limit
+     * @param null     $offset
+     *
+     * @return
+     */
+    public function findChildren(TreeNode $node, array $criteria = [], array $orderBy = NULL, $limit = NULL, $offset = NULL)
+    {
+        return parent::findBy(array_merge($criteria, ['path' => $node->getChildrenPath()]), $orderBy, $limit, $offset);
+    }
+
+    /**
+     * @param TreeNode $node
+     * @param array    $criteria
+     * @param array    $orderBy
+     * @param null     $limit
+     * @param null     $offset
+     *
+     * @return mixed
+     */
+    public function findSiblings(TreeNode $node, array $criteria = [], array $orderBy = NULL, $limit = NULL, $offset = NULL)
+    {
+        $siblings = parent::findBy(array_merge($criteria, ['path' => $node->getPath()]), $orderBy, $limit, $offset);
+        return array_filter( // skip $node
+            $siblings,
+            function ($var) use ($node) {
+                return $var->getId() != $node->getId();
+            }
+        );
+    }
+
 } 
