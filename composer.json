@@ -1,5 +1,7 @@
 {
     "name": "gzero/doctrine2-extensions",
+    "description": "Doctrine2 behavioral extensions based on traits (PHP >= 5.4).",
+    "keywords": ["doctrine2"],
     "license": "MIT",
     "authors": [
         {
