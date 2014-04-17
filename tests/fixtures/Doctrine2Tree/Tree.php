@@ -1,7 +1,7 @@
 <?php namespace fixtures\Doctrine2Test;
 
-use Gzero\Doctrine2Tree\Entity\TreeNode;
-use Gzero\Doctrine2Tree\Entity\TreeTrait;
+use Gzero\Doctrine2Extensions\Tree\TreeNode;
+use Gzero\Doctrine2Extensions\Tree\TreeNodeTrait;
 
 /**
  * For the full copyright and license information, please view the LICENSE
@@ -16,7 +16,7 @@ use Gzero\Doctrine2Tree\Entity\TreeTrait;
  */
 class Tree implements TreeNode {
 
-    use TreeTrait;
+    use TreeNodeTrait;
 
     /**
      * @Id @GeneratedValue @Column(type="integer")

@@ -1,7 +1,6 @@
-<?php namespace Gzero\Doctrine2Tree\Repository;
+<?php namespace Gzero\Doctrine2Extensions\Tree;
 
 use Doctrine\DBAL\Query\QueryBuilder;
-use Gzero\Doctrine2Tree\Entity\TreeNode;
 
 /**
  * For the full copyright and license information, please view the LICENSE
@@ -9,15 +8,15 @@ use Gzero\Doctrine2Tree\Entity\TreeNode;
  *
  * Class TreeTrait
  *
- * @package    Gzero\Doctrine2Tree\Repository
+ * @package    Gzero\Doctrine2Extensions\Repository
  * @author     Adrian Skierniewski <adrian.skierniewski@gmail.com>
  * @copyright  Copyright (c) 2014, Adrian Skierniewski
  */
-trait TreeTrait {
+trait TreeRepositoryTrait {
 
     /**
-     * @param \Gzero\Doctrine2Tree\Entity\TreeNode $node
-     * @param array                                $orderBy
+     * @param TreeNode $node
+     * @param array    $orderBy
      *
      * @return mixed
      */

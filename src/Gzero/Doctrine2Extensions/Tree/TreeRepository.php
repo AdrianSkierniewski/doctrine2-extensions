@@ -1,6 +1,4 @@
-<?php namespace Gzero\Doctrine2Tree\Repository;
-
-use Gzero\Doctrine2Tree\Entity\TreeNode;
+<?php namespace Gzero\Doctrine2Extensions\Tree;
 
 /**
  * For the full copyright and license information, please view the LICENSE
@@ -8,7 +6,7 @@ use Gzero\Doctrine2Tree\Entity\TreeNode;
  *
  * Interface TreeRepository
  *
- * @package    Gzero\Doctrine2Tree\Repository
+ * @package    Gzero\Doctrine2Extensions\Repository
  * @author     Adrian Skierniewski <adrian.skierniewski@gmail.com>
  * @copyright  Copyright (c) 2014, Adrian Skierniewski
  */

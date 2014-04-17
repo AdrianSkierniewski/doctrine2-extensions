@@ -1,8 +1,8 @@
 <?php namespace fixtures\Doctrine2Test;
 
 use Doctrine\ORM\EntityRepository;
-use Gzero\Doctrine2Tree\Repository\TreeRepository as TreeRepositoryInterface;
-use Gzero\Doctrine2Tree\Repository\TreeTrait;
+use Gzero\Doctrine2Extensions\Tree\TreeRepository as TreeRepositoryInterface;
+use Gzero\Doctrine2Extensions\Tree\TreeRepositoryTrait;
 
 /**
  * This file is part of the GZERO CMS package.
@@ -18,5 +18,5 @@ use Gzero\Doctrine2Tree\Repository\TreeTrait;
  */
 class TreeRepository extends EntityRepository implements TreeRepositoryInterface {
 
-    use TreeTrait;
+    use TreeRepositoryTrait;
 } 

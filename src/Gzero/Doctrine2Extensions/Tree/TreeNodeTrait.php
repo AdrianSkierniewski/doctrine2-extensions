@@ -1,4 +1,4 @@
-<?php namespace Gzero\Doctrine2Tree\Entity;
+<?php namespace Gzero\Doctrine2Extensions\Tree;
 
 use Doctrine\Common\Collections\ArrayCollection;
 
@@ -8,11 +8,11 @@ use Doctrine\Common\Collections\ArrayCollection;
  *
  * Trait Tree
  *
- * @package    Gzero\Doctrine2Tree
+ * @package    Gzero\Doctrine2Extensions
  * @author     Adrian Skierniewski <adrian.skierniewski@gmail.com>
  * @copyright  Copyright (c) 2014, Adrian Skierniewski
  */
-trait TreeTrait {
+trait TreeNodeTrait {
 
     /**
      * @Column(type="string")

@@ -63,7 +63,7 @@ class TreeNodeTest extends Doctrine2TestCase {
 
     /**
      * @test
-     * @expectedException \Gzero\Doctrine2Tree\Entity\TreeException
+     * @expectedException \Gzero\Doctrine2Extensions\Tree\TreeException
      */
     public function can_only_add_same_entity()
     {
@@ -112,7 +112,7 @@ class TreeNodeTest extends Doctrine2TestCase {
 
     /**
      * @test
-     * @expectedException \Gzero\Doctrine2Tree\Entity\TreeException
+     * @expectedException \Gzero\Doctrine2Extensions\Tree\TreeException
      */
     public function cant_move_parent_to_descendant()
     {

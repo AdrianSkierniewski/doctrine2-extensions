@@ -1,12 +1,10 @@
-<?php namespace Gzero\Doctrine2Tree\Subscriber;
+<?php namespace Gzero\Doctrine2Extensions\Tree;
 
 use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Persistence\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Events;
-use Gzero\Doctrine2Tree\Entity\TreeException;
-use Gzero\Doctrine2Tree\Entity\TreeNode;
 
 /**
  * This file is part of the GZERO CMS package.
@@ -16,7 +14,7 @@ use Gzero\Doctrine2Tree\Entity\TreeNode;
  *
  * Class TreeSubscriber
  *
- * @package    Gzero\Doctrine2Tree\Subscriber
+ * @package    Gzero\Doctrine2Extensions\Subscriber
  * @author     Adrian Skierniewski <adrian.skierniewski@gmail.com>
  * @copyright  Copyright (c) 2014, Adrian Skierniewski
  */
@@ -132,14 +130,18 @@ class TreeSubscriber implements EventSubscriber {
      */
     private function hasTreeTrait($classMetadata)
     {
-        return in_array('Gzero\Doctrine2Tree\Entity\TreeTrait', array_keys($classMetadata->reflClass->getTraits()), TRUE);
+        return in_array(
+            'Gzero\Doctrine2Extensions\Tree\TreeNodeTrait',
+            array_keys($classMetadata->reflClass->getTraits()),
+            TRUE
+        );
     }
 
     /**
      * @param TreeNode           $entity
      * @param LifecycleEventArgs $eventArgs
      *
-     * @throws \Gzero\Doctrine2Tree\Entity\TreeException
+     * @throws TreeException
      */
     private function validateParentMove(TreeNode $entity, LifecycleEventArgs $eventArgs)
     {

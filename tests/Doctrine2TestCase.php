@@ -41,7 +41,7 @@ class Doctrine2TestCase extends \PHPUnit_Framework_TestCase {
         $this->logger = new \Doctrine\DBAL\Logging\DebugStack();
         $config       = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode);
         $config->setSQLLogger($this->logger);
-        $evm->addEventSubscriber(new \Gzero\Doctrine2Tree\Subscriber\TreeSubscriber());
+        $evm->addEventSubscriber(new \Gzero\Doctrine2Extensions\Tree\TreeSubscriber());
         $this->em = EntityManager::create($this->dbParams, $config, $evm);
 
         $this->generateSchema(); // Build the schema for sqlite
