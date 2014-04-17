@@ -14,7 +14,7 @@ use Doctrine\ORM\Events;
  *
  * Class TreeSubscriber
  *
- * @package    Gzero\Doctrine2Extensions\Subscriber
+ * @package    Gzero\Doctrine2Extensions\Tree
  * @author     Adrian Skierniewski <adrian.skierniewski@gmail.com>
  * @copyright  Copyright (c) 2014, Adrian Skierniewski
  */

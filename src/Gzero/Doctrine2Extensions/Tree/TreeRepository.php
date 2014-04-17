@@ -6,7 +6,7 @@
  *
  * Interface TreeRepository
  *
- * @package    Gzero\Doctrine2Extensions\Repository
+ * @package    Gzero\Doctrine2Extensions\Tree
  * @author     Adrian Skierniewski <adrian.skierniewski@gmail.com>
  * @copyright  Copyright (c) 2014, Adrian Skierniewski
  */

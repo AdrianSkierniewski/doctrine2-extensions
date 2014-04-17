@@ -7,9 +7,15 @@ php:
 
 before_script:
   - composer self-update
+  - composer require satooshi/php-coveralls:dev-master --dev --no-progress --prefer-source
   - composer install --prefer-source --no-interaction --dev
 
-script: phpunit -d memory_limit=1024M --exclude-group ignore
+script:
+  - mkdir -p build/logs
+  - phpunit -d memory_limit=1024M --exclude-group ignore --coverage-clover build/logs/clover.xml
+
+after_script:
+  - php vendor/bin/coveralls -v
 
 matrix:
   allow_failures:
