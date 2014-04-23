@@ -16,36 +16,20 @@ trait TimestampTrait {
      * @Column(type="datetime")
      * @var \DateTime
      */
-    protected $created_at;
+    protected $createdAt;
 
     /**
      * @Column(type="datetime")
      * @var \DateTime
      */
-    protected $updated_at;
-
-    /**
-     * @param \DateTime $created_at
-     */
-    public function setCreatedAt($created_at)
-    {
-        $this->created_at = $created_at;
-    }
+    protected $updatedAt;
 
     /**
      * @return \DateTime
      */
     public function getCreatedAt()
     {
-        return $this->created_at;
-    }
-
-    /**
-     * @param \DateTime $updated_at
-     */
-    public function setUpdatedAt($updated_at)
-    {
-        $this->updated_at = $updated_at;
+        return $this->createdAt;
     }
 
     /**
@@ -53,7 +37,7 @@ trait TimestampTrait {
      */
     public function getUpdatedAt()
     {
-        return $this->updated_at;
+        return $this->updatedAt;
     }
 
     /**
@@ -64,9 +48,9 @@ trait TimestampTrait {
      */
     public function updateTimestamps()
     {
-        $this->setUpdatedAt(new \DateTime(date('Y-m-d H:i:s')));
+        $this->updatedAt = new \DateTime(date('Y-m-d H:i:s'));
         if ($this->getCreatedAt() == NULL) {
-            $this->setCreatedAt(new \DateTime(date('Y-m-d H:i:s')));
+            $this->createdAt = new \DateTime(date('Y-m-d H:i:s'));
         }
     }
 } 

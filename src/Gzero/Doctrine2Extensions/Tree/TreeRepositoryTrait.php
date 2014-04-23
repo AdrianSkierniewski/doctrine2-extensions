@@ -20,17 +20,18 @@ trait TreeRepositoryTrait {
      *
      * @return mixed
      */
-    public function findDescendants(TreeNode $node, array $orderBy = NULL)
+    public function findDescendants(TreeNode $node, array $orderBy = [])
     {
         /* @var QueryBuilder $qb */
         $qb = $this->_em->createQueryBuilder();
-        $qb->select('n')
+        $qb->select('n', 'c', 'p')
             ->from($this->getClassName(), 'n')
+            ->leftJoin('n.parent', 'p', 'ON')
+            ->leftJoin('n.children', 'c', 'ON')
             ->where('n.path LIKE :path')
             ->setParameter('path', $node->getChildrenPath() . '%')
             ->orderBy('n.level');
         return $qb->getQuery()->getResult();
-
     }
 
     /**
@@ -44,8 +45,10 @@ trait TreeRepositoryTrait {
         if ($node->getPath() != '/') { // root does not have ancestors
             $ancestorsIds = explode('/', substr(substr($node->getPath(), 1), 0, -1));
             $qb           = $this->_em->createQueryBuilder();
-            $qb->select('n')
+            $qb->select('n', 'c', 'p')
                 ->from($this->getClassName(), 'n')
+                ->leftJoin('n.parent', 'p', 'ON')
+                ->leftJoin('n.children', 'c', 'ON')
                 ->where('n.id IN(:ids)')
                 ->setParameter('ids', $ancestorsIds)
                 ->orderBy('n.level');
