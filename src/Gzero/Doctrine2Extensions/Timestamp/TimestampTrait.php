@@ -1,4 +1,4 @@
-<?php namespace Gzero\Entity\Traits;
+<?php namespace Gzero\Doctrine2Extensions\Timestamp;
 
 /**
  * For the full copyright and license information, please view the LICENSE
