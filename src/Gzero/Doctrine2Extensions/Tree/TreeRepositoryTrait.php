@@ -15,11 +15,13 @@ use Doctrine\ORM\Query;
 trait TreeRepositoryTrait {
 
     /**
+     * Get all descendants nodes to specific node
+     *
      * @param TreeNode $node
-     * @param bool     $tree
+     * @param bool     $tree If you want get in tree structure instead of list
      * @param int      $hydrate
      *
-     * @return array
+     * @return mixed
      */
     public function getDescendants(TreeNode $node, $tree = FALSE, $hydrate = Query::HYDRATE_ARRAY)
     {
@@ -35,20 +37,22 @@ trait TreeRepositoryTrait {
         } else {
             $qb->select('n');
         }
-        $nodes = $qb->getQuery()->getResult($hydrate); // Our node is first on this list
+        $nodes = $qb->getQuery()->getResult($hydrate);
         if ($tree) {
-            return (!empty($nodes[0])) ? $nodes[0] : NULL;
+            return (!empty($nodes[0])) ? $nodes[0] : NULL; // We return root node (our node)
         } else {
             return $nodes;
         }
     }
 
     /**
+     * Get all ancestors nodes to specific node
+     *
      * @param TreeNode $node
-     * @param bool     $tree
+     * @param bool     $tree If you want get in tree structure instead of list
      * @param int      $hydrate
      *
-     * @return array
+     * @return mixed
      */
     public function getAncestors(TreeNode $node, $tree = FALSE, $hydrate = Query::HYDRATE_ARRAY)
     {
@@ -67,9 +71,9 @@ trait TreeRepositoryTrait {
             } else {
                 $qb->select('n');
             }
-            $nodes = $qb->getQuery()->getResult();
+            $nodes = $qb->getQuery()->getResult($hydrate);
             if ($tree) {
-                return (!empty($nodes[0])) ? $nodes[0] : NULL;
+                return (!empty($nodes[0])) ? $nodes[0] : NULL; // We return root node
             } else {
                 return $nodes;
             }
@@ -82,13 +86,15 @@ trait TreeRepositoryTrait {
     }
 
     /**
+     * Get all children nodes to specific node
+     *
      * @param TreeNode $node
      * @param array    $criteria
      * @param array    $orderBy
      * @param null     $limit
      * @param null     $offset
      *
-     * @return
+     * @return mixed
      */
     public function getChildren(TreeNode $node, array $criteria = [], array $orderBy = NULL, $limit = NULL, $offset = NULL)
     {
@@ -96,6 +102,8 @@ trait TreeRepositoryTrait {
     }
 
     /**
+     * Get all siblings nodes to specific node
+     *
      * @param TreeNode $node
      * @param array    $criteria
      * @param array    $orderBy
