@@ -1,12 +1,12 @@
 <?php namespace Gzero\Doctrine2Extensions\Tree;
 
-use Doctrine\DBAL\Query\QueryBuilder;
+use Doctrine\ORM\Query;
 
 /**
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * Class TreeTrait
+ * Class TreeTrait - This is only EXAMPLE IMPLEMENTATION TRAIT!
  *
  * @package    Gzero\Doctrine2Extensions\Tree
  * @author     Adrian Skierniewski <adrian.skierniewski@gmail.com>
@@ -16,44 +16,69 @@ trait TreeRepositoryTrait {
 
     /**
      * @param TreeNode $node
-     * @param array    $orderBy
+     * @param bool     $tree
+     * @param int      $hydrate
      *
-     * @return mixed
+     * @return array
      */
-    public function getDescendants(TreeNode $node, array $orderBy = [])
+    public function getDescendants(TreeNode $node, $tree = FALSE, $hydrate = Query::HYDRATE_ARRAY)
     {
         $qb = $this->newQB()
-            ->select('n', 'c', 'p')
             ->from($this->getClassName(), 'n')
-            ->leftJoin('n.parent', 'p', 'ON')
-            ->leftJoin('n.children', 'c', 'ON')
             ->where('n.path LIKE :path')
             ->setParameter('path', $node->getChildrenPath() . '%')
             ->orderBy('n.level');
-        return $qb->getQuery()->getResult();
+        if ($tree) {
+            $qb->select('n', 'c', 'p')
+                ->leftJoin('n.parent', 'p')
+                ->leftJoin('n.children', 'c');
+        } else {
+            $qb->select('n');
+        }
+        $nodes = $qb->getQuery()->getResult($hydrate); // Our node is first on this list
+        if ($tree) {
+            return (!empty($nodes[0])) ? $nodes[0] : NULL;
+        } else {
+            return $nodes;
+        }
     }
 
     /**
      * @param TreeNode $node
+     * @param bool     $tree
+     * @param int      $hydrate
      *
      * @return array
      */
-    public function getAncestors(TreeNode $node)
+    public function getAncestors(TreeNode $node, $tree = FALSE, $hydrate = Query::HYDRATE_ARRAY)
     {
         if ($node->getPath() != '/') { // root does not have ancestors
-            $ancestorsIds = explode('/', substr(substr($node->getPath(), 1), 0, -1));
+            $ancestorsIds = $node->getAncestorsIds(); //
 
             $qb = $this->newQB()
-                ->select('n', 'c', 'p')
                 ->from($this->getClassName(), 'n')
-                ->leftJoin('n.parent', 'p', 'ON')
-                ->leftJoin('n.children', 'c', 'ON')
                 ->where('n.id IN(:ids)')
                 ->setParameter('ids', $ancestorsIds)
                 ->orderBy('n.level');
-            return $qb->getQuery()->getResult();
+            if ($tree) {
+                $qb->select('n', 'c', 'p')
+                    ->leftJoin('n.parent', 'p')
+                    ->leftJoin('n.children', 'c');
+            } else {
+                $qb->select('n');
+            }
+            $nodes = $qb->getQuery()->getResult();
+            if ($tree) {
+                return (!empty($nodes[0])) ? $nodes[0] : NULL;
+            } else {
+                return $nodes;
+            }
         }
-        return [];
+        if ($tree) {
+            return NULL;
+        } else {
+            return [];
+        }
     }
 
     /**
