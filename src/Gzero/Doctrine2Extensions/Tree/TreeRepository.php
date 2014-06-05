@@ -18,12 +18,11 @@ interface TreeRepository {
      * Get all ancestors nodes to specific node
      *
      * @param TreeNode $node
-     * @param bool     $tree If you want get in tree structure instead of list
      * @param int      $hydrate
      *
      * @return mixed
      */
-    public function getAncestors(TreeNode $node, $tree = FALSE, $hydrate = Query::HYDRATE_ARRAY);
+    public function getAncestors(TreeNode $node, $hydrate = Query::HYDRATE_ARRAY);
 
     /**
      * Get all descendants nodes to specific node

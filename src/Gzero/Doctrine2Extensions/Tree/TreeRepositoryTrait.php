@@ -39,7 +39,13 @@ trait TreeRepositoryTrait {
         }
         $nodes = $qb->getQuery()->getResult($hydrate);
         if ($tree) {
-            return (!empty($nodes[0])) ? $nodes[0] : NULL; // We return root node (our node)
+            return array_filter(
+                $nodes,
+                function ($item) use ($node) { // We return children's array because we don't have one root
+                    $level = (is_array($item)) ? @$item['level'] : $item->getLevel(); // @TODO Ugly HAX ['level']
+                    return ($level == $node->getLevel() + 1);
+                }
+            );
         } else {
             return $nodes;
         }
@@ -49,40 +55,26 @@ trait TreeRepositoryTrait {
      * Get all ancestors nodes to specific node
      *
      * @param TreeNode $node
-     * @param bool     $tree If you want get in tree structure instead of list
      * @param int      $hydrate
      *
      * @return mixed
      */
-    public function getAncestors(TreeNode $node, $tree = FALSE, $hydrate = Query::HYDRATE_ARRAY)
+    public function getAncestors(TreeNode $node, $hydrate = Query::HYDRATE_ARRAY)
     {
         if ($node->getPath() != '/') { // root does not have ancestors
             $ancestorsIds = $node->getAncestorsIds(); //
 
             $qb = $this->newQB()
+                ->select('n')
                 ->from($this->getClassName(), 'n')
                 ->where('n.id IN(:ids)')
                 ->setParameter('ids', $ancestorsIds)
                 ->orderBy('n.level');
-            if ($tree) {
-                $qb->select('n', 'c', 'p')
-                    ->leftJoin('n.parent', 'p')
-                    ->leftJoin('n.children', 'c');
-            } else {
-                $qb->select('n');
-            }
+
             $nodes = $qb->getQuery()->getResult($hydrate);
-            if ($tree) {
-                return (!empty($nodes[0])) ? $nodes[0] : NULL; // We return root node
-            } else {
-                return $nodes;
-            }
+            return $nodes;
         }
-        if ($tree) {
-            return NULL;
-        } else {
-            return [];
-        }
+        return [];
     }
 
     /**
