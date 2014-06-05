@@ -116,9 +116,20 @@ trait TreeNodeTrait {
         return $this->path;
     }
 
+    /**
+     * @return string
+     */
     public function getChildrenPath()
     {
         return $this->getPath() . $this->getId() . '/';
+    }
+
+    /**
+     * @return array
+     */
+    public function getAncestorsIds()
+    {
+        return explode('/', substr(substr($this->getPath(), 1), 0, -1));
     }
 
     /**

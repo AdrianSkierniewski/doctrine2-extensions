@@ -14,4 +14,11 @@ use Doctrine\ORM\EntityRepository;
  */
 class BaseRepository extends EntityRepository {
 
+    /**
+     * @return \Doctrine\ORM\QueryBuilder
+     */
+    protected function newQB()
+    {
+        return $this->_em->createQueryBuilder();
+    }
 }

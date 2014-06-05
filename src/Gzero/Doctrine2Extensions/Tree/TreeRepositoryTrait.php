@@ -20,11 +20,10 @@ trait TreeRepositoryTrait {
      *
      * @return mixed
      */
-    public function findDescendants(TreeNode $node, array $orderBy = [])
+    public function getDescendants(TreeNode $node, array $orderBy = [])
     {
-        /* @var QueryBuilder $qb */
-        $qb = $this->_em->createQueryBuilder();
-        $qb->select('n', 'c', 'p')
+        $qb = $this->newQB()
+            ->select('n', 'c', 'p')
             ->from($this->getClassName(), 'n')
             ->leftJoin('n.parent', 'p', 'ON')
             ->leftJoin('n.children', 'c', 'ON')
@@ -39,13 +38,13 @@ trait TreeRepositoryTrait {
      *
      * @return array
      */
-    public function findAncestors(TreeNode $node)
+    public function getAncestors(TreeNode $node)
     {
-        /* @var QueryBuilder $qb */
         if ($node->getPath() != '/') { // root does not have ancestors
             $ancestorsIds = explode('/', substr(substr($node->getPath(), 1), 0, -1));
-            $qb           = $this->_em->createQueryBuilder();
-            $qb->select('n', 'c', 'p')
+
+            $qb = $this->newQB()
+                ->select('n', 'c', 'p')
                 ->from($this->getClassName(), 'n')
                 ->leftJoin('n.parent', 'p', 'ON')
                 ->leftJoin('n.children', 'c', 'ON')
@@ -66,7 +65,7 @@ trait TreeRepositoryTrait {
      *
      * @return
      */
-    public function findChildren(TreeNode $node, array $criteria = [], array $orderBy = NULL, $limit = NULL, $offset = NULL)
+    public function getChildren(TreeNode $node, array $criteria = [], array $orderBy = NULL, $limit = NULL, $offset = NULL)
     {
         return parent::findBy(array_merge($criteria, ['path' => $node->getChildrenPath()]), $orderBy, $limit, $offset);
     }
@@ -80,7 +79,7 @@ trait TreeRepositoryTrait {
      *
      * @return mixed
      */
-    public function findSiblings(TreeNode $node, array $criteria = [], array $orderBy = NULL, $limit = NULL, $offset = NULL)
+    public function getSiblings(TreeNode $node, array $criteria = [], array $orderBy = NULL, $limit = NULL, $offset = NULL)
     {
         $siblings = parent::findBy(array_merge($criteria, ['path' => $node->getPath()]), $orderBy, $limit, $offset);
         return array_filter( // skip $node

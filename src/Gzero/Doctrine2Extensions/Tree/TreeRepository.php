@@ -12,12 +12,12 @@
  */
 interface TreeRepository {
 
-    public function findAncestors(TreeNode $node);
+    public function getAncestors(TreeNode $node);
 
-    public function findDescendants(TreeNode $node);
+    public function getDescendants(TreeNode $node);
 
-    public function findChildren(TreeNode $node, array $criteria = [], array $orderBy = NULL, $limit = NULL, $offset = NULL);
+    public function getChildren(TreeNode $node, array $criteria = [], array $orderBy = NULL, $limit = NULL, $offset = NULL);
 
-    public function findSiblings(TreeNode $node, array $criteria = [], array $orderBy = NULL, $limit = NULL, $offset = NULL);
+    public function getSiblings(TreeNode $node, array $criteria = [], array $orderBy = NULL, $limit = NULL, $offset = NULL);
 
 } 

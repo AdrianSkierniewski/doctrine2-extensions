@@ -18,6 +18,8 @@ interface TreeNode {
 
     public function getPath();
 
+    public function getAncestorsIds();
+
     public function getChildrenPath();
 
     public function getLevel();

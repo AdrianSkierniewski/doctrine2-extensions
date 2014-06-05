@@ -40,9 +40,9 @@ class TreeRepositoryTest extends Doctrine2TestCase {
     {
         extract($this->createAdvancedTree());
         /** @noinspection PhpUndefinedVariableInspection */
-        $this->assertCount(10, $this->repo->findDescendants($root));
+        $this->assertCount(10, $this->repo->getDescendants($root));
         /** @noinspection PhpUndefinedVariableInspection */
-        $this->assertCount(2, $this->repo->findDescendants($child1));
+        $this->assertCount(2, $this->repo->getDescendants($child1));
     }
 
     /**
@@ -54,9 +54,9 @@ class TreeRepositoryTest extends Doctrine2TestCase {
     {
         extract($this->createAdvancedTree());
         /** @noinspection PhpUndefinedVariableInspection */
-        $this->assertCount(3, $this->repo->findAncestors($child1_1_1));
+        $this->assertCount(3, $this->repo->getAncestors($child1_1_1));
         /** @noinspection PhpUndefinedVariableInspection */
-        $this->assertCount(0, $this->repo->findAncestors($root), "Root shouldn't have ancestors");
+        $this->assertCount(0, $this->repo->getAncestors($root), "Root shouldn't have ancestors");
     }
 
     /**
@@ -66,7 +66,7 @@ class TreeRepositoryTest extends Doctrine2TestCase {
     {
         extract($this->createAdvancedTree());
         /** @noinspection PhpUndefinedVariableInspection */
-        $children = $this->repo->findChildren($child1_1);
+        $children = $this->repo->getChildren($child1_1);
         $this->assertCount(1, $children);
         $this->assertEquals($children[0]->getPath(), $child1_1->getChildrenPath());
     }
