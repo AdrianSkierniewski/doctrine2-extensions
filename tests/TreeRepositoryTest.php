@@ -1,4 +1,5 @@
 <?php
+use Doctrine\ORM\Query;
 
 /**
  * For the full copyright and license information, please view the LICENSE
@@ -36,7 +37,7 @@ class TreeRepositoryTest extends Doctrine2TestCase {
      * @TODO check order by level
      * @TODO check descendants nodes
      */
-    public function can_find_descendants()
+    public function can_get_descendants()
     {
         extract($this->createAdvancedTree());
         /** @noinspection PhpUndefinedVariableInspection */
@@ -48,13 +49,20 @@ class TreeRepositoryTest extends Doctrine2TestCase {
     /**
      * @test
      * @TODO check order by level
-     * @TODO check ancestors nodes
      */
-    public function can_find_ancestors()
+    public function can_get_ancestors()
     {
         extract($this->createAdvancedTree());
         /** @noinspection PhpUndefinedVariableInspection */
-        $this->assertCount(3, $this->repo->getAncestors($child1_1_1));
+        $ancestors = $this->repo->getAncestors($child1_1_1);
+        $this->assertCount(3, $ancestors);
+        /** @noinspection PhpUndefinedVariableInspection */
+        $this->assertEquals($root->getId(), $ancestors[0]['id']);
+        /** @noinspection PhpUndefinedVariableInspection */
+        $this->assertEquals($child1->getId(), $ancestors[1]['id']);
+        $ancestors = $this->repo->getAncestors($child1_1_1, Query::HYDRATE_OBJECT);
+        $this->assertInstanceOf('fixtures\Doctrine2Test\Tree', $ancestors[0]);
+        $this->assertEquals($ancestors[0]->getId(), $child1_1_1->getParent()->getParent()->getParent()->getId());
         /** @noinspection PhpUndefinedVariableInspection */
         $this->assertCount(0, $this->repo->getAncestors($root), "Root shouldn't have ancestors");
     }
@@ -62,7 +70,7 @@ class TreeRepositoryTest extends Doctrine2TestCase {
     /**
      * @test
      */
-    public function can_find_children()
+    public function can_get_children()
     {
         extract($this->createAdvancedTree());
         /** @noinspection PhpUndefinedVariableInspection */
