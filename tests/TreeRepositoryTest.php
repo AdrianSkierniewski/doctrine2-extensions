@@ -43,7 +43,10 @@ class TreeRepositoryTest extends Doctrine2TestCase {
         /** @noinspection PhpUndefinedVariableInspection */
         $this->assertCount(10, $this->repo->getDescendants($root));
         /** @noinspection PhpUndefinedVariableInspection */
-        $this->assertCount(2, $this->repo->getDescendants($child1));
+        $descendants = $this->repo->getDescendants($child1, TRUE, Query::HYDRATE_OBJECT);
+        $this->assertCount(1, $descendants); // child1 have only one child1_1
+        /** @noinspection PhpUndefinedVariableInspection */
+        $this->assertEquals($descendants[0]->getChildren()->first()->getId(), $child1_1_1->getId());
     }
 
     /**
