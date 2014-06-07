@@ -88,6 +88,8 @@ class TreeNodeTest extends Doctrine2TestCase {
         $this->em->persist($root);
         $this->em->persist($sibling1);
         $this->em->flush();
+        $this->em->refresh($sibling1);
+        $this->em->refresh($sibling2);
         $this->assertNull($sibling1->getParent()); // Sibling for root is root node
         $this->assertEquals($sibling1->getLevel(), 0); // Root level is 0
         $this->assertEquals(3, $sibling2->getLevel()); // Same level as sibling
@@ -100,14 +102,24 @@ class TreeNodeTest extends Doctrine2TestCase {
      */
     public function can_move_subtree()
     {
-        extract($this->createSimpleTree());
+        extract($this->createAdvancedTree());
         /** @noinspection PhpUndefinedVariableInspection */
         $child1->setChildOf($child2);
         /** @noinspection PhpUndefinedVariableInspection */
-        $this->em->persist($root);
+        $this->em->persist($child1);
         $this->em->flush();
-        $this->em->persist($root);
-        $this->em->flush();
+        // REFRESH SUBTREE NODES
+        $this->em->refresh($child1);
+        /** @noinspection PhpUndefinedVariableInspection */
+        $this->em->refresh($child1_1);
+        /** @noinspection PhpUndefinedVariableInspection */
+        $this->em->refresh($child1_1_1);
+        // REFRESH SUBTREE NODES
+        $this->assertEquals($child1->getParent()->getId(), $child2->getId()); // Parent was changed
+        $this->assertEquals($child1->getChildrenPath(), $child1_1->getPath()); // Path updated in children nodes
+        $this->assertEquals($child1_1->getChildrenPath(), $child1_1_1->getPath()); // Path updated in children nodes
+        /** @noinspection PhpUndefinedVariableInspection */
+        $this->assertEquals($child1->getPath(), $child2_2->getPath()); // Siblings have same path
     }
 
     /**

@@ -31,9 +31,14 @@ trait TreeRepositoryTrait {
             ->setParameter('path', $node->getChildrenPath() . '%')
             ->orderBy('n.level');
         if ($tree) {
-            $qb->select('n', 'c', 'p')
-                ->leftJoin('n.parent', 'p')
-                ->leftJoin('n.children', 'c');
+            $qb->select('n', 'c')
+                ->leftJoin(
+                    'n.children',
+                    'c',
+                    'WITH',
+                    'c.level > :nodeLevel'
+                )
+                ->setParameter('nodeLevel', $node->getLevel());
         } else {
             $qb->select('n');
         }
