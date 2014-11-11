@@ -1,6 +1,7 @@
 <?php namespace Gzero\Doctrine2Extensions\Tree;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * For the full copyright and license information, please view the LICENSE
@@ -15,13 +16,13 @@ use Doctrine\Common\Collections\ArrayCollection;
 trait TreeNodeTrait {
 
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      * @var string
      */
     protected $path = '/';
 
     /**
-     * @Column(type="integer")
+     * @ORM\Column(type="integer")
      * @var integer
      */
     protected $level = 0;

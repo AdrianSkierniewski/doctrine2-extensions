@@ -1,10 +1,12 @@
 <?php namespace Gzero\Doctrine2Extensions\Timestamp;
 
+use Doctrine\ORM\Mapping as ORM;
+
 /**
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * Trait Timestamp - To use this trait you must set @HasLifecycleCallbacks on your entity
+ * Trait Timestamp - To use this trait you must set HasLifecycleCallbacks on your entity
  *
  * @package    Gzero\Doctrine2Extensions\Tree
  * @author     Adrian Skierniewski <adrian.skierniewski@gmail.com>
@@ -13,13 +15,13 @@
 trait TimestampTrait {
 
     /**
-     * @Column(type="datetime")
+     * @ORM\Column(type="datetime")
      * @var \DateTime
      */
     protected $createdAt;
 
     /**
-     * @Column(type="datetime")
+     * @ORM\Column(type="datetime")
      * @var \DateTime
      */
     protected $updatedAt;
@@ -43,8 +45,8 @@ trait TimestampTrait {
     /**
      * Tell doctrine that before we persist or update we call the updateTimestamps() function.
      *
-     * @PrePersist
-     * @PreUpdate
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
      */
     public function updateTimestamps()
     {
