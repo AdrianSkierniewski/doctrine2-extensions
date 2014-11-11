@@ -21,7 +21,7 @@ class Doctrine2TestCase extends \PHPUnit_Framework_TestCase {
 
     protected $dbParams = [
         'driver' => 'pdo_sqlite',
-        'memory' => TRUE
+        'memory' => true
     ];
     /**
      * @var EntityManager
@@ -36,10 +36,10 @@ class Doctrine2TestCase extends \PHPUnit_Framework_TestCase {
     public function setUp()
     {
         $paths        = [__DIR__ . "/fixtures/Doctrine2Tree/"];
-        $isDevMode    = TRUE;
+        $isDevMode    = true;
         $evm          = new \Doctrine\Common\EventManager();
         $this->logger = new \Doctrine\DBAL\Logging\DebugStack();
-        $config       = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode);
+        $config       = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode, '', null, false);
         $config->setSQLLogger($this->logger);
         $evm->addEventSubscriber(new \Gzero\Doctrine2Extensions\Tree\TreeSubscriber());
         $this->em = EntityManager::create($this->dbParams, $config, $evm);
@@ -82,7 +82,7 @@ class Doctrine2TestCase extends \PHPUnit_Framework_TestCase {
      */
     protected function createAdvancedTree()
     {
-        $tree                 = array();
+        $tree                 = [];
         $tree['root']         = (new Tree())->setAsRoot();
         $tree['child1']       = (new Tree())->setChildOf($tree['root']);
         $tree['child2']       = (new Tree())->setChildOf($tree['root']);
@@ -107,7 +107,7 @@ class Doctrine2TestCase extends \PHPUnit_Framework_TestCase {
      */
     protected function createSimpleTree()
     {
-        $tree               = array();
+        $tree               = [];
         $tree['root']       = (new Tree())->setAsRoot(); // id 1 path / level 0
         $tree['child1']     = (new Tree())->setChildOf($tree['root']); // id 2 path /1/ level 1
         $tree['child1_1']   = (new Tree())->setChildOf($tree['child1']); // id 3 path /1/2/ level 2
